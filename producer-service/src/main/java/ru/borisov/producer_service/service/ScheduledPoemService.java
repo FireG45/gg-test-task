@@ -20,7 +20,7 @@ public class ScheduledPoemService {
     public ScheduledPoemService(
             LLMService llmService,
             KafkaProducer kafkaProducer,
-            @Value("${llm.default.prompt:Напиши четверостишие в стиле Есенина о природе}") String defaultPrompt
+            @Value("${llm.default.prompt}") String defaultPrompt
     ) {
         this.llmService = llmService;
         this.kafkaProducer = kafkaProducer;

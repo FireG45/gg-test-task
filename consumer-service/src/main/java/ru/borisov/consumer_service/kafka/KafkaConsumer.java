@@ -20,6 +20,6 @@ public class KafkaConsumer {
     @KafkaListener(id = "${kafka.config.consumer.group-id}", topics = "${kafka.topic}")
     public void listenReportMessages(ConsumerRecord<String, String> record) {
         String timestamp = formatter.format(Instant.ofEpochMilli(record.timestamp()));
-        log.info(String.format("[%s] \n %s", timestamp, record.value()));
+        log.info(String.format("\n[%s]\n%s", timestamp, record.value()));
     }
 }

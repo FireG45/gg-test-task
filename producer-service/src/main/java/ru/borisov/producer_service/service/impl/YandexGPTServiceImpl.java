@@ -2,9 +2,11 @@ package ru.borisov.producer_service.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.borisov.producer_service.service.LLMService;
+import ru.borisov.producer_service.service.handler.LLMResponseHandler;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,16 +23,21 @@ public class YandexGPTServiceImpl implements LLMService {
     private final String apiKey;
     private final String apiSecret;
     private final ObjectMapper mapper;
+    private final LLMResponseHandler responseHandler;
 
+    @Autowired
     public YandexGPTServiceImpl(
             @Value("${llm.api.url}") String apiUrl,
             @Value("${llm.api.key}") String apiKey,
-            @Value("${llm.api.secret}") String apiSecret, ObjectMapper mapper
+            @Value("${llm.api.secret}") String apiSecret,
+            ObjectMapper mapper,
+            LLMResponseHandler responseHandler
     ) {
         this.apiUrl = apiUrl;
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
         this.mapper = mapper;
+        this.responseHandler = responseHandler;
     }
 
     @Override
@@ -61,7 +68,7 @@ public class YandexGPTServiceImpl implements LLMService {
 
         HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
 
-        String responseBody = response.body();
+        String responseBody = responseHandler.handleResponse(response.statusCode(), response.body(), mapper);
 
         JsonNode root = mapper.readTree(responseBody);
 
